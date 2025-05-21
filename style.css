@@ -1,0 +1,161 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    background: #f5d3e0;
+    font-family: 'Courier New', cursive;
+}
+
+.card-container {
+    perspective: 1000px;
+}
+
+.card {
+    position: relative;
+    width: 600px;
+    height: 400px;
+    transform-style: preserve-3d;
+    transition: transform 0.8s;
+    cursor: pointer;
+}
+
+.card.flipped {
+    transform: rotateY(180deg);
+}
+
+.card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+}
+
+/* Estilos para ambas caras de la carta */
+.card-front, .card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    background: #fff;
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    padding: 30px;
+    box-sizing: border-box;
+}
+
+/* Frente de la carta */
+.card-front {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff url('textura-papel.jpg') repeat;
+    border: 2px solid #ffb3c8;
+    transform: rotateY(0deg);
+}
+
+.message-content {
+    text-align: center;
+    color: #6d2a4b;
+    max-width: 500px;
+}
+
+.message-content h1 {
+    font-size: 2.5em;
+    margin-bottom: 20px;
+}
+
+.hint {
+    margin-top: 30px;
+    font-style: italic;
+    color: #e91e63;
+}
+
+/* Reverso de la carta */
+.card-back {
+    transform: rotateY(180deg);
+    position: relative;
+    overflow: hidden;
+}
+
+.hidden-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+#scratchCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    cursor: crosshair;
+}
+
+.scratch-instruction {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 255, 255, 0.9);
+    padding: 10px 20px;
+    border-radius: 25px;
+    color: #e91e63;
+    font-weight: bold;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+/* Efecto de sello de corazón */
+.card-front::after {
+    content: '💖';
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    font-size: 2em;
+    opacity: 0.8;
+}
+
+/* Animación de entrada de la carta */
+@keyframes cardEntrance {
+    0% {
+        transform: translateY(100px) scale(0.5);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+
+.card-container {
+    perspective: 1000px;
+    animation: cardEntrance 1s ease-out forwards;
+}
+
+/* Corazones flotantes */
+.hearts-container {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+}
+
+.heart {
+    position: absolute;
+    font-size: 24px;
+    opacity: 0;
+    animation: float 8s linear infinite;
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(100vh) rotate(0deg);
+        opacity: 0.8;
+    }
+    100% {
+        transform: translateY(-100vh) rotate(360deg);
+        opacity: 0;
+    }
+}
