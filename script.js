@@ -148,7 +148,7 @@ function createHearts() {
 
     const heartsContainer = document.querySelector('.hearts-container');
 
-    const hearts = ['❤️', '💖', '💘', '💝', '💗', '💓'];
+    const hearts = ['❤️', '💖', '💘', '💝', '💗', '💓','🎓','🎉'];
 
     
 
