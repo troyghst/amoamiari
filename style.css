@@ -1,96 +1,153 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const card = document.querySelector('.card');
-    const canvas = document.getElementById('scratchCanvas');
-    const ctx = canvas.getContext('2d');
-    let isScratching = false;
-    const brushSize = 25;
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(to right, #ffafbd, #ffc3a0);
+  overflow: hidden;
+}
 
-    // Flip de la carta
-    card.addEventListener('click', () => {
-        if (!card.classList.contains('flipped')) {
-            card.classList.add('flipped');
-            initScratch();
-            // Más corazones y emojis tras girar la carta
-            for (let i = 0; i < 20; i++) generateHeart();
-        }
-    });
+.card-container {
+  perspective: 1000px;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
-    function initScratch() {
-        canvas.width = card.offsetWidth;
-        canvas.height = card.offsetHeight;
+.card {
+  width: 400px;
+  height: 600px;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 1s;
+  cursor: pointer;
+}
 
-        ctx.fillStyle = '#808080';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.globalCompositeOperation = 'destination-out';
+.card-inner {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  transform-style: preserve-3d;
+}
 
-        canvas.addEventListener('mousedown', startScratch);
-        canvas.addEventListener('mousemove', scratch);
-        canvas.addEventListener('mouseup', endScratch);
-        canvas.addEventListener('mouseleave', endScratch);
-    }
+.card-front,
+.card-back {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  backface-visibility: hidden;
+  border-radius: 20px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+}
 
-    function startScratch(e) {
-        isScratching = true;
-        scratch(e);
-    }
+.card-front {
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+  text-align: center;
+  z-index: 2;
+}
 
-    function scratch(e) {
-        if (!isScratching) return;
+.card-front h1 {
+  color: #e91e63;
+}
 
-        const rect = canvas.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
+.card-front p {
+  color: #555;
+  margin: 10px 0;
+}
 
-        ctx.beginPath();
-        ctx.arc(x, y, brushSize, 0, Math.PI * 2);
-        ctx.fill();
+.card-back {
+  background: #ffe4e1;
+  transform: rotateY(180deg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
 
-        checkProgress();
-    }
+.hidden-image {
+  width: 80%;
+  border-radius: 15px;
+  display: block;
+}
 
-    function endScratch() {
-        isScratching = false;
-    }
+.hint {
+  margin-top: 20px;
+  font-style: italic;
+  color: #888;
+}
 
-    function checkProgress() {
-        const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
-        let transparent = 0;
+canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: 20px;
+  cursor: crosshair;
+}
 
-        for (let i = 3; i < pixels.length; i += 4) {
-            if (pixels[i] === 0) transparent++;
-        }
+.scratch-instruction {
+  position: absolute;
+  bottom: 20px;
+  background: rgba(255, 255, 255, 0.8);
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-weight: bold;
+  color: #d50000;
+  z-index: 3;
+}
 
-        const percentage = (transparent / (pixels.length / 4)) * 100;
-        if (percentage > 96) {
-            canvas.style.opacity = '0';
-            setTimeout(() => {
-                canvas.style.display = 'none';
-            }, 500);
-        }
-    }
+.hearts-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 999;
+}
 
-    createHearts();
-});
+.heart {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background-color: red;
+  transform: rotate(45deg);
+  animation: float 5s linear infinite;
+}
 
-function createHearts() {
-    const heartsContainer = document.querySelector('.hearts-container');
-    const emojis = ['❤️', '💖', '💘', '🎉', '🎓', '💝', '💗', '💓'];
+.heart::before,
+.heart::after {
+  content: "";
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background-color: red;
+  border-radius: 50%;
+}
 
-    function generateHeart() {
-        const heart = document.createElement('div');
-        heart.className = 'heart';
-        heart.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+.heart::before {
+  top: -10px;
+  left: 0;
+}
 
-        const size = Math.random() * 30 + 15;
-        const left = Math.random() * 100;
+.heart::after {
+  left: -10px;
+  top: 0;
+}
 
-        heart.style.fontSize = `${size}px`;
-        heart.style.left = `${left}%`;
-
-        heartsContainer.appendChild(heart);
-
-        setTimeout(() => heart.remove(), 8000);
-    }
-
-    setInterval(generateHeart, 500);
-        }
+@keyframes float {
+  0% {
+    transform: translateY(0) rotate(45deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100vh) rotate(45deg);
+    opacity: 0;
+  }
+}
